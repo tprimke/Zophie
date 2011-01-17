@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>The Sophie project</title>
+		<link rel="stylesheet" type="text/css" href="static/css/table.css" />
+		<script src="static/js/jquery-1.4.2.min.js"></script>
+		<script src="static/js/jquery.tools.min.js"></script>
+		<script src="static/js/table.js"></script>
+		<script type="text/javascript">
+			$(document).ready(
+			  function()
+				{
+					table = STable( { rows: 5,
+					                  cols: 5,
+														id: "test",
+														headers: [ '1', '2', '3', '4', '5'],
+														edit: 'cell-edit' } );
+					table.randomize();
+					table.render();
+					
+					$('#rnd').click(
+					  function(e)
+						{
+							table.randomize();
+							table.index(1);
+							e.preventDefault();
+						}
+					);
+
+          $('#srt').click(
+            function(e)
+            {
+              table.sort(0,0,1,4,'row,0,asc');
+              e.preventDefault();
+            }
+          );
+					
+					$('#edit').click(
+					  function(e)
+						{
+							$('#cell-edit').data('overlay').load();
+							e.preventDefault();
+						}
+					);
+					
+					$("#cell-edit").overlay({
+						effect: 'apple',
+					
+					  // custom top position
+					  //top: 260,
+					
+					  // some mask tweaks suitable for facebox-looking dialogs
+					  mask: {
+					
+					    // you might also consider a "transparent" color for the mask
+					    color: '#fff',
+					
+					    // load mask a little faster
+					    loadSpeed: 200,
+					
+					    // very transparent
+					    opacity: 0.5
+					  },
+					
+					  // disable this for modal dialog-type of overlays
+					  closeOnClick: false,
+					   
+					  // load it immediately after the construction
+					  load: false
+					
+					});					
+				}
+			);
+		</script>
+	</head>
+	<body>
+		<div id="test"></div>
+		<a id="rnd">randomize</a>
+    <a id="srt">sort</a>
+		<a id="edit">edit</a>
+		<!--
+    <a id="hlCell">hlCell</a>
+    <a id="hlCellOff">hlCellOff</a>
+    <a id="blinkOn">blinkOn</a>
+    <a id="blinkOff">blinkOff</a>
+		<a id="blinkXOn">blinkCellsRowOn</a>
+		<a id="blinkXOff">blinkCellsRowOff</a>
+    <a id="blinkYOn">blinkCellsColOn</a>
+    <a id="blinkYOff">blinkCellsColOff</a>
+		-->
+		
+	<div class="apple_overlay" id="cell-edit">
+    <div class="details" align="center">
+      <h2>Wprowadź wartość komórki:</h2>
+			<form>
+				<input type="text" id="cell-edit-text" />
+			</form>
+			<p><a id="cell-edit-ok" href="">OK</a></p>
+    </div>
+  </div>
+
+	</body>
+</html>

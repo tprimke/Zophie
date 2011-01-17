@@ -1,0 +1,833 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>The Sophie project - table demo</title>
+		
+		<!-- The stylesheet for table, needed for editing cells. -->
+		<link rel="stylesheet" type="text/css" href="static/css/table.css" />
+		<style>
+			/* root element for tabs  */
+			ul.tabs { 
+			  list-style:none; 
+			  margin:0 !important; 
+			  padding:0;  
+			  border-bottom:1px solid #666; 
+			  height:30px;
+			}
+			
+			/* single tab */
+			ul.tabs li { 
+			  float:left;  
+			  text-indent:0;
+			  padding:0;
+			  margin:0 !important;
+			  list-style-image:none !important; 
+			}
+			
+			/* link inside the tab. uses a background image */
+			ul.tabs a { 
+			  background: url(static/images/blue.png) no-repeat -420px 0;
+			  font-size:11px;
+			  display:block;
+			  height: 30px;  
+			  line-height:30px;
+			  width: 134px;
+			  text-align:center;  
+			  text-decoration:none;
+			  color:#333;
+			  padding:0px;
+			  margin:0px; 
+			  position:relative;
+			  top:1px;
+			}
+			
+			ul.tabs a:active {
+			  outline:none;   
+			}
+			
+			/* when mouse enters the tab move the background image */
+			ul.tabs a:hover {
+			  background-position: -420px -31px;  
+			  color:#fff; 
+			}
+			
+			/* active tab uses a class name "current". its highlight is also done by moving the background image. */
+			ul.tabs a.current, ul.tabs a.current:hover, ul.tabs li.current a {
+			  background-position: -420px -62px;    
+			  cursor:default !important; 
+			  color:#000 !important;
+			}
+			
+			/* Different widths for tabs: use a class name: w1, w2, w3 or w2 */
+			
+			
+			/* width 1 */
+			ul.tabs a.s       { background-position: -553px 0; width:81px; }
+			ul.tabs a.s:hover   { background-position: -553px -31px; }
+			ul.tabs a.s.current  { background-position: -553px -62px; }
+			
+			/* width 2 */
+			ul.tabs a.l       { background-position: -248px -0px; width:174px; }
+			ul.tabs a.l:hover   { background-position: -248px -31px; }
+			ul.tabs a.l.current  { background-position: -248px -62px; }
+			
+			
+			/* width 3 */
+			ul.tabs a.xl      { background-position: 0 -0px; width:248px; }
+			ul.tabs a.xl:hover  { background-position: 0 -31px; }
+			ul.tabs a.xl.current { background-position: 0 -62px; }
+			
+			
+			/* initially all panes are hidden */ 
+			.panes .pane {
+			  display:none;   
+			}
+			}
+			
+
+		</style>
+		
+		<!-- The table library requires jQuery. -->
+		<script src="static/js/jquery-1.4.2.min.js"></script>
+		
+		<!-- Editing cells requires jQuery UI Tools. -->
+		<script src="static/js/jquery.tools.min.js"></script>
+		
+		<!-- The table library itself. -->
+		<script src="static/js/table.js"></script>
+		
+		<script type="text/javascript">
+			$(document).ready(
+			  function()
+				{
+					// create the table
+					table = STable( { rows: 5, cols: 5,
+					                  
+														// might be anything unique
+														id: "test",
+														
+														headers: [ 'First_1', 'Second_2', 'Third_3', 'Fourth', 'Fifth'],
+														
+														// the cell edit html element id
+														edit: 'cell-edit' } );
+														
+					// we have to place some values in the table before rendering it
+					table.randomize();
+					table.render();
+					
+					// set up all the functions
+					
+					$('#set00').click(
+					  function(e)
+						{
+							table.setCell(0,0,10);
+							$('#code').html('table.setCell(0,0,10);');
+							e.preventDefault();
+						}
+					);
+					
+					$('#hl00').click(
+					  function(e)
+						{
+							table.hlCell(0,0,true,'00ff00');
+							$('#code').html('table.hlCell(0,0,true,"00ff00");');
+							e.preventDefault();
+						}
+					);
+					
+					$('#hl00off').click(
+					  function(e)
+						{
+							table.hlCell(0,0);
+							$('#code').html('table.hlCell(0,0);');
+							e.preventDefault();
+						}
+					);
+					
+					$('#bl00').click(
+					  function(e)
+						{
+							table.blinkCell(0,0,true,'ff0000');
+							$('#code').html('table.blinkCell(0,0,true,"ff0000");');
+							e.preventDefault();
+						}
+					);
+
+          $('#bl00off').click(
+            function(e)
+            {
+              table.blinkCell(0,0);
+              $('#code').html('table.blinkCell(0,0);');
+              e.preventDefault();
+            }
+          );
+
+          $('#rnd').click(
+            function(e)
+            {
+              table.randomize();
+							$('#code').html('table.randomize();');
+              e.preventDefault();
+            }
+          );
+
+          $('#idx1').click(
+            function(e)
+            {
+              table.index();
+              $('#code').html('table.index();');
+              e.preventDefault();
+            }
+          );
+
+          $('#idx5').click(
+            function(e)
+            {
+              table.index(5);
+              $('#code').html('table.index(5);');
+              e.preventDefault();
+            }
+          );
+
+          $('#getset0').click(
+            function(e)
+            {
+              var arr = table.getRow(1);
+							for ( var i = 0; i < arr[0].length; i++ )
+							  arr[0][i] = arr[0][i] + 1;
+							table.setRow(0,arr);
+              $('#code').html('var arr = table.getRow(1);\nfor ( var i = 0; i < arr[0].length; i++ )\n  arr[0][i] = arr[0][i] + 1;\ntable.setRow(0,arr);');
+              e.preventDefault();
+            }
+          );
+
+          $('#getset01').click(
+            function(e)
+            {
+              var arr = table.getRows(2,3);
+							for ( var row = 0; row < 2; row++ )
+	              for ( var col = 0; col < arr[row].length; col++ )
+	                arr[row][col] = arr[row][col] + 1;
+              table.setRows(0,1,arr);
+							var str = [ 'var arr = table.getRows(2,3);',
+							  'for ( var row = 0; row < 2; row++ )',
+								'  for ( var col = 0; col < arr[row].length; col++ )',
+								'    arr[row][col] = arr[row][col] + 1;',
+								'table.setRows(0,1,arr);' ];
+              $('#code').html(str.join('\n'));
+              e.preventDefault();
+            }
+          );
+
+          $('#hlRow').click(
+            function(e)
+            {
+              table.hlRow(0,true,'#00ff00');
+              $('#code').html('table.hlRow(0,true,"#00ff00");');
+              e.preventDefault();
+            }
+          );
+
+          $('#hlRowOff').click(
+            function(e)
+            {
+              table.hlRow(0);
+              $('#code').html('table.hlRow(0);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRow').click(
+            function(e)
+            {
+              table.blinkRow(0,true,'#ff0000');
+              $('#code').html('table.blinkRow(0,true,"#ff0000");');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRowOff').click(
+            function(e)
+            {
+              table.blinkRow(0);
+              $('#code').html('table.blinkRow(0);');
+              e.preventDefault();
+            }
+          );
+
+          $('#hlRow0Cells').click(
+            function(e)
+            {
+              table.hlCellsRow(0,1,3,true,"#00ff00");
+              $('#code').html('table.hlCellsRow(0,1,3,true,"#00ff00");');
+              e.preventDefault();
+            }
+          );
+
+          $('#hlRow0CellsOff').click(
+            function(e)
+            {
+              table.hlCellsRow(0,1,3);
+              $('#code').html('table.hlCellsRow(0,1,3);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRow0Cells').click(
+            function(e)
+            {
+              table.blinkCellsRow(0,1,3,true,"#ff0000");
+              $('#code').html('table.blinkCellsRow(0,1,3,true,"#ff0000");');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRow0CellsOff').click(
+            function(e)
+            {
+              table.blinkCellsRow(0,1,3);
+              $('#code').html('table.blinkCellsRow(0,1,3);');
+              e.preventDefault();
+            }
+          );
+
+          $('#getsetC0').click(
+            function(e)
+            {
+              var arr = table.getCol(1);
+              for ( var row = 0; row < arr.length; row++ )
+                arr[row][0] = arr[row][0] + 1;
+              table.setCol(0,arr);
+							var str = [ 'var arr = table.getCol(1);', 
+							  'for ( var row = 0; row < arr.length; row++ )',
+								'  arr[row][0] = arr[row][0] + 1;',
+								'table.setCol(0,arr);' ];
+              $('#code').html(str.join('\n'));
+              e.preventDefault();
+            }
+          );
+
+          $('#getsetC01').click(
+            function(e)
+            {
+              var arr = table.getCols(2,3);
+              for ( var row = 0; row < arr.length; row++ )
+                for ( var col = 0; col < arr[row].length; col++ )
+                  arr[row][col] = arr[row][col] + 1;
+              table.setCols(0,1,arr);
+              var str = [ 'var arr = table.getCols(2,3);',
+                'for ( var row = 0; row < arr.length; row++ )',
+                '  for ( var col = 0; col < arr[row].length; col++ )',
+                '    arr[row][col] = arr[row][col] + 1;',
+                'table.setCols(0,1,arr);' ];
+              $('#code').html(str.join('\n'));
+              e.preventDefault();
+            }
+          );
+
+          $('#hlCol').click(
+            function(e)
+            {
+              table.hlCol(0,true,'#00ff00');
+              $('#code').html('table.hlCol(0,true,"#00ff00");');
+              e.preventDefault();
+            }
+          );
+
+          $('#hlColOff').click(
+            function(e)
+            {
+              table.hlCol(0);
+              $('#code').html('table.hlCol(0);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blCol').click(
+            function(e)
+            {
+              table.blinkCol(0,true,'#ff0000');
+              $('#code').html('table.blinkCol(0,true,"#ff0000");');
+              e.preventDefault();
+            }
+          );
+
+          $('#blColOff').click(
+            function(e)
+            {
+              table.blinkCol(0);
+              $('#code').html('table.blinkCol(0);');
+              e.preventDefault();
+            }
+          );
+
+          $('#hlCol0Cells').click(
+            function(e)
+            {
+              table.hlCellsCol(0,1,3,true,"#00ff00");
+              $('#code').html('table.hlCellsCol(0,1,3,true,"#00ff00");');
+              e.preventDefault();
+            }
+          );
+
+          $('#hlCol0CellsOff').click(
+            function(e)
+            {
+              table.hlCellsCol(0,1,3);
+              $('#code').html('table.hlCellsCol(0,1,3);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blCol0Cells').click(
+            function(e)
+            {
+              table.blinkCellsCol(0,1,3,true,"#ff0000");
+              $('#code').html('table.blinkCellsCol(0,1,3,true,"#ff0000");');
+              e.preventDefault();
+            }
+          );
+
+          $('#blCol0CellsOff').click(
+            function(e)
+            {
+              table.blinkCellsCol(0,1,3);
+              $('#code').html('table.blinkCellsCol(0,1,3);');
+              e.preventDefault();
+            }
+          );
+
+          $('#copy').click(
+            function(e)
+            {
+              var arr = table.getArray(0,0,1,1);
+							table.setArray(3,3,4,4,arr);
+              $('#code').html('var arr = table.getArray(0,0,1,1);\ntable.setArray(3,3,4,4,arr);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRow2').click(
+            function(e)
+            {
+              table.blinkRow(1,true,"#00ff00");
+              $('#code').html('table.blinkRow(1,true,"#00ff00");');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRow2off').click(
+            function(e)
+            {
+              table.blinkRow(1);
+              $('#code').html('table.blinkRow(1);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRow3').click(
+            function(e)
+            {
+              table.blinkRow(2,true,"#00ff00",2000,500);
+              $('#code').html('table.blinkRow(2,true,"#00ff00",2000,500);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blRow3off').click(
+            function(e)
+            {
+              table.blinkRow(2);
+              $('#code').html('table.blinkRow(2);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blCol4').click(
+            function(e)
+            {
+              table.blinkCol(3,true,"#00ff00",500,100);
+              $('#code').html('table.blinkCol(3,true,"#00ff00",500,100);');
+              e.preventDefault();
+            }
+          );
+
+          $('#blCol4off').click(
+            function(e)
+            {
+              table.blinkCol(3);
+              $('#code').html('table.blinkCol(3);');
+              e.preventDefault();
+            }
+          );
+
+          $('#exRow').click(
+            function(e)
+            {
+              table.exchRows(0,1);
+              $('#code').html('table.exchRows(0,1);');
+              e.preventDefault();
+            }
+          );
+
+          $('#exCol').click(
+            function(e)
+            {
+              table.exchCols(0,1);
+              $('#code').html('table.exchCols(0,1);');
+              e.preventDefault();
+            }
+          );
+
+          $('#exInRow').click(
+            function(e)
+            {
+              table.exchCellsInRow(0,1,3,1);
+              $('#code').html('table.exchCellsInRow(0,1,3,1);');
+              e.preventDefault();
+            }
+          );
+
+          $('#exInCol').click(
+            function(e)
+            {
+              table.exchCellsInCol(1,0,3,1);
+              $('#code').html('table.exchCellsInCol(1,0,3,1);');
+              e.preventDefault();
+            }
+          );
+
+          $('#exCell').click(
+            function(e)
+            {
+              table.exchCells(0,0,4,4);
+              $('#code').html('table.exchCells(0,0,4,4);');
+              e.preventDefault();
+            }
+          );
+
+          $('#exPart').click(
+            function(e)
+            {
+              var arr1 = table.getArray(0,0,1,1);
+							var arr2 = table.getArray(3,3,4,4);
+							table.setArray(0,0,1,1,arr2);
+							table.setArray(3,3,4,4,arr1);
+							var str = [ 'var arr1 = table.getArray(0,0,1,1);',
+							'var arr2 = table.getArray(3,3,4,4);',
+							'table.setArray(0,0,1,1,arr2);',
+							'table.setArray(3,3,4,4,arr1);' ];
+              $('#code').html(str.join('\n'));
+              e.preventDefault();
+            }
+          );
+
+          $('#sortRow0Asc').click(
+            function(e)
+            {
+              table.sort(0,0,0,4,"row,0,asc");
+              $('#code').html('table.sort(0,0,0,4,"row,0,asc");');
+              e.preventDefault();
+            }
+          );
+
+          $('#sortRow0Desc').click(
+            function(e)
+            {
+              table.sort(0,0,0,4,"row,0,desc");
+              $('#code').html('table.sort(0,0,0,4,"row,0,desc");');
+              e.preventDefault();
+            }
+          );
+
+          $('#sortCol0Asc').click(
+            function(e)
+            {
+              table.sort(0,0,4,0,"col,0,asc");
+              $('#code').html('table.sort(0,0,4,0,"col,0,asc");');
+              e.preventDefault();
+            }
+          );
+
+          $('#sortCol0Desc').click(
+            function(e)
+            {
+              table.sort(0,0,4,0,"col,0,desc");
+              $('#code').html('table.sort(0,0,4,0,"col,0,desc");');
+              e.preventDefault();
+            }
+          );
+
+          $('#sortRowAsc').click(
+            function(e)
+            {
+              table.sort(0,0,4,4,"row,0,asc");
+              $('#code').html('table.sort(0,0,4,4,"row,0,asc");');
+              e.preventDefault();
+            }
+          );
+
+          $('#sortColDesc').click(
+            function(e)
+            {
+              table.sort(0,0,4,4,"col,0,desc");
+              $('#code').html('table.sort(0,0,4,4,"col,0,desc");');
+              e.preventDefault();
+            }
+          );
+
+          /*
+          $('#').click(
+            function(e)
+            {
+              table.
+              $('#code').html('table.');
+              e.preventDefault();
+            }
+          );
+          */
+					
+
+          $('#srt').click(
+            function(e)
+            {
+              table.sort(0,0,1,4,'row,0,asc');
+              e.preventDefault();
+            }
+          );
+					
+					$('#edit').click(
+					  function(e)
+						{
+							$('#cell-edit').data('overlay').load();
+							e.preventDefault();
+						}
+					);
+					
+					$("#cell-edit").overlay({
+						effect: 'apple',
+					
+					  // custom top position
+					  //top: 260,
+					
+					  // some mask tweaks suitable for facebox-looking dialogs
+					  mask: {
+					
+					    // you might also consider a "transparent" color for the mask
+					    color: '#fff',
+					
+					    // load mask a little faster
+					    loadSpeed: 200,
+					
+					    // very transparent
+					    opacity: 0.5
+					  },
+					
+					  // disable this for modal dialog-type of overlays
+					  closeOnClick: false,
+					   
+					  // load it immediately after the construction
+					  load: false
+					
+					});
+					
+					// setup ul.tabs to work as tabs for each div directly under div.panes
+          $("ul.tabs").tabs("div.panes > div");
+
+				}
+			);
+		</script>
+	</head>
+	<body>
+		<div id="test"></div>
+		<div align="center">
+			<p>Control panel</p>
+			
+      <!-- the tabs -->
+      <ul class="tabs">
+        <li><a href="#">Single cell</a></li>
+        <li><a href="#">Rows</a></li>
+        <li><a href="#">Columns</a></li>
+        <li><a href="#">Blinking</a></li>
+				<li><a href="#">Values</a></li>
+				<li><a href="#">Sorting</a></li>
+				<li><a href="#">Various</a></li>
+      </ul>
+      
+      <!-- tab "panes" -->
+      <div class="panes">
+        <div>
+          <h2>Operations on a single cell</h2>
+					<table width="100%" border="0">
+						<tr>
+							<td colspan="2" align="center"><a id="set00" href="#">Set the (0,0) cell to 10.</a></td>
+						</tr>
+						<tr>
+							<td align="center"><a id="hl00" href="#">Highlight the (0,0) cell.</a></td>
+							<td align="center"><a id="bl00" href="#">Start the (0,0) cell to blink.</a></td>
+						</tr>
+						<tr>
+							<td align="center"><a id="hl00off" href="#">Turn the highlighted (0,0) cell off.</a></td>
+							<td align="center"><a id="bl00off" href="#">Stop the (0,0) cell to blink.</a></td>
+						</tr>
+					</table>
+          <p>In all cases, the first two parameters are the number of row and the number of column.</p>
+        </div>
+        <div>
+          <h2>Operations on row(s)</h2>
+					<table width="100%" border="0">
+						<tr>
+							<td align="center"><a id="getset0" href="#">Set the first row to incremented values from the second one.</a></td>
+              <td align="center"><a id="blRow" href="#">Start the cells in the 1st row to blink.</a></td>
+						</tr>
+            <tr>
+              <td align="center"><a id="getset01" href="#">Set the first two rows to incremented values from the third and fourth ones.</a></td>
+              <td align="center"><a id="blRowOff" href="#">Stop the cells in the 1st row to blink.</a></td>
+            </tr>
+            <tr>
+              <td align="center"><a id="hlRow" href="#">Highlight the first row.</a></td>
+              <td align="center"><a id="blRow0Cells" href="#">Start blinking of some cells in the first row.</a></td>
+            </tr>
+            <tr>
+              <td align="center"><a id="hlRowOff" href="#">Turn off the highlighted first row.</a></td>
+              <td align="center"><a id="blRow0CellsOff" href="#">Stop blinking of some cells in the first row.</a></td>
+            </tr>
+            <tr>
+              <td align="center" colspan="2"><a id="hlRow0Cells" href="#">Highlight some cells in the first row.</a></td>
+            </tr>
+            <tr>
+              <td align="center" colspan="2"><a id="hlRow0CellsOff" href="#">Turn off the highlight of some cells in the first row.</a></td>
+            </tr>
+					</table>
+					<p>In all methods, the first parameter is the number of row.<br />
+					  When more then one row is involved, the first parameter is the lower number of row, and the second one is the higher number of row.<br />
+						When only some cells in a row are considered, the first parameter is the number of row, while the next two parameters are the lower and the higher number of column involved.
+					</p>
+        </div>
+        <div>
+        	<h2>Operations on column(s)</h2>
+					<table width="100%" border="0">
+						<tr>
+							<td align="center"><a id="getsetC0" href="#">Set the first column to incremented values from the second one.</a></td>
+              <td align="center"><a id="blCol" href="#">Start the cells in the 1st column to blink.</a></td>
+						</tr>
+            <tr>
+              <td align="center"><a id="getsetC01" href="#">Set the first two columns to incremented values from the third and fourth ones.</a></td>
+              <td align="center"><a id="blColOff" href="#">Stop the cells in the 1st column to blink.</a></td>
+            </tr>
+            <tr>
+              <td align="center"><a id="hlCol" href="#">Highlight the first column.</a></td>
+              <td align="center"><a id="blCol0Cells" href="#">Start some cells in the first column to blink.</a></td>
+            </tr>
+            <tr>
+              <td align="center"><a id="hlColOff" href="#">Turn off the highlighted first column.</a></td>
+              <td align="center"><a id="blCol0CellsOff" href="#">Stop blinking of some cells in the first column.</a></td>
+            </tr>
+            <tr>
+              <td align="center" colspan="2"><a id="hlCol0Cells" href="#">Highlight some cells in the first column.</a></td>
+            </tr>
+            <tr>
+              <td align="center" colspan="2"><a id="hlCol0CellsOff" href="#">Turn off the highlight of some cells in the first column.</a></td>
+            </tr>
+					</table>
+          <p>In all methods, the first parameter is the number of column.<br />
+            When more then one column is involved, the first parameter is the lower number of column, and the second one is the higher number of column.<br />
+            When only some cells in a column are considered, the first parameter is the number of column, while the next two parameters are the lower and the higher number of row involved.
+          </p>
+				</div>
+				<div>
+					<h2>Blinking</h2>
+					<table width="100%" border="0">
+						<tr>
+							<td align="center"><a id="blRow2" href="#">Blink cells in the second row in green.</a></td>
+              <td align="center"><a id="blRow2off" href="#">Turn the blinking of the second row off.</a></td>
+						</tr>
+            <tr>
+              <td align="center"><a id="blRow3" href="#">Blink cells in the third row in green, slower.</a></td>
+              <td align="center"><a id="blRow3off" href="#">Turn the blinking of the third row off.</a></td>
+            </tr>
+            <tr>
+              <td align="center"><a id="blCol4" href="#">Blink cells in the fourth column in green, faster.</a></td>
+              <td align="center"><a id="blCol4off" href="#">Turn the blinking of the fourth column off.</a></td>
+            </tr>
+					</table>
+					<p>Blinking is done by controlling the background colour.<br />
+					   After specifying the row/column and cells numbers, the blinking mode should be given. It's false by default.<br />
+						 The last two (optional) parameters are times: on and off. "on" is the time that the cells will be highlithed on, and "off" is time that the cells will be highlighted off.
+					</p>
+			  </div>
+				<div>
+					<h2>Operations on values</h2>
+					<table width="100%" border="0">
+						<tr>
+							<td align="center"><a id="exRow" href="#">Exchange values in rows 1 and 2.</a></td>
+              <td align="center"><a id="exCol" href="#">Exchange values in columns 1 and 2.</a></td>
+						</tr>
+            <tr>
+              <td align="center"><a id="exInRow" href="#">Exchange values of the middle cells in rows 1 and 2.</a></td>
+              <td align="center"><a id="exInCol" href="#">Exchange values of the middle cells in columns 1 and 2.</a></td>
+            </tr>
+            <tr>
+              <td align="center"><a id="exCell" href="#">Exchange values of the cells (0,0) and (4,4).</a></td>
+              <td align="center"><a id="exPart" href="#">Exchange values of the cells (0,0)-(1,1) and (3,3)-(4,4).</a></td>
+            </tr>
+					</table>
+			  </div>
+				<div>
+					<h2>Sorting</h2>
+					<table width="100%" border="0">
+						<tr>
+							<td align="center"><a id="sortRow0Asc" href="#">Sort values in the first row, ascending.</a></td>
+              <td align="center"><a id="sortCol0Asc" href="#">Sort values in the first column, ascending.</a></td>
+						</tr>
+            <tr>
+              <td align="center"><a id="sortRow0Desc" href="#">Sort values in the first row, descending.</a></td>
+              <td align="center"><a id="sortCol0Desc" href="#">Sort values in the first column, descending.</a></td>
+            </tr>
+            <tr>
+              <td align="center"><a id="sortRowAsc" href="#">Sort all values, with respect to the 1st row, ascending.</a></td>
+              <td align="center"><a id="sortColDesc" href="#">Sort all values, with respect to the 1st column, descending.</a></td>
+            </tr>
+					</table>
+					<p>The first two parameters are the coordinates of the left-top cell.<br />
+					   The next two parameters are the coordinates of the right-bottom cell.<br />
+						 The last parameter is the sorting mode. It consist of three parts, separated with a colon.<br />
+						 The first part is the sorting base - it's either 'row' or 'col'.<br />
+						 The second part is the number of row/column, which contains the values to be sorted.<br />
+						 The third part is either 'asc' (for ascending) or 'desc' (for descending).<br >
+						 While sorting, only the cells within the given coordinates will be affected.
+					</p>
+				</div>
+				<div>
+					<h2>Various operations</h2>
+					<table width="100%" border="0">
+						<tr>
+							<td align="center"><a id="rnd" href="#">Randomize values.</a></td>
+              <td align="center"><a id="idx1" href="#">Set index values in the first column.</a></td>
+						</tr>
+            <tr>
+              <td align="center"><a id="copy" href="#">Copy cells (0,0)-(1,1) to cells (3,3)-(4,4).</a></td>
+              <td align="center"><a id="idx5" href="#">Set index values in the first column, starting from 5.</a></td>
+            </tr>
+					</table>
+				</div>
+      </div>
+      <p>Code:</p>
+      <textarea id="code" rows="5" cols="50"></textarea>
+			
+    <p>You can edit cells, after you click them.</p>
+		</div>
+		
+		<div class="apple_overlay" id="cell-edit">
+	    <div class="details" align="center">
+	      <h2>Enter a new value:</h2>
+				<form>
+					<input type="text" id="cell-edit-text" />
+				</form>
+				<p><a id="cell-edit-ok" href="">OK</a></p>
+	    </div>
+	  </div>
+
+	</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>The Sophie project - matrix multiplying demo</title>
+    
+    <!-- The stylesheet for table, needed for editing cells. -->
+    <link rel="stylesheet" type="text/css" href="static/css/table.css" />
+    <style>
+			/*
+			  root element for the scrollable.
+			  when scrolling occurs this element stays still.
+			*/
+			.scrollable {
+			
+			  /* required settings */
+			  position:relative;
+			  overflow:hidden;
+			  width: 1000px;
+			  height:600px;
+				align: center;
+			
+			  /* custom decorations */
+			  border:1px solid #ccc;
+			  background:url(/img/global/gradient/h300.png) repeat-x;
+				float: left;
+			}
+			
+			/*
+			  root element for scrollable items. Must be absolutely positioned
+			  and it should have a extremely large width to accomodate scrollable items.
+			  it's enough that you set the width and height for the root element and
+			  not for this element.
+			*/
+			.scrollable .items {
+			  /* this cannot be too large */
+			  width:20000em;
+			  position:absolute;
+			  clear:both;
+			}
+			
+			.items div {
+			  float:left;
+			  width:1000px;
+			}
+			
+			/* single scrollable item */
+			.scrollable img {
+			  float:left;
+			  margin:20px 5px 20px 21px;
+			  background-color:#fff;
+			  padding:2px;
+			  border:1px solid #ccc;
+			  width:100px;
+			  height:75px;
+			  
+			  -moz-border-radius:4px;
+			  -webkit-border-radius:4px;
+			}
+			
+			/* active item */
+			.scrollable .active {
+			  border:2px solid #000;
+			  position:relative;
+			  cursor:default;
+			}
+			
+			/* prev, next, prevPage and nextPage buttons */
+			a.browse {
+			  background:url(../img/scrollable/arrow/hori_large.png) no-repeat;
+			  display:block;
+			  width:30px;
+			  height:30px;
+			  float:left;
+			  margin:40px 10px;
+			  cursor:pointer;
+			  font-size:1px;
+			}
+			
+			/* right */
+			a.right         { background-position: 0 -30px; clear:right; margin-right: 0px;}
+			a.right:hover     { background-position:-30px -30px; }
+			a.right:active  { background-position:-60px -30px; } 
+			
+			
+			/* left */
+			a.left        { margin-left: 0px; } 
+			a.left:hover      { background-position:-30px 0; }
+			a.left:active   { background-position:-60px 0; }
+			
+			/* up and down */
+			a.up, a.down    { 
+			  background:url(../img/scrollable/arrow/vert_large.png) no-repeat; 
+			  float: none;
+			  margin: 10px 50px;
+			}
+			
+			/* up */
+			a.up:hover      { background-position:-30px 0; }
+			a.up:active     { background-position:-60px 0; }
+			
+			/* down */
+			a.down        { background-position: 0 -30px; }
+			a.down:hover      { background-position:-30px -30px; }
+			a.down:active   { background-position:-60px -30px; } 
+			
+			
+			/* disabled navigational button */
+			a.disabled {
+			  visibility:hidden !important;   
+			}   
+
+    </style>
+    
+    <!-- The table library requires jQuery. -->
+    <script src="static/js/jquery-1.4.2.min.js"></script>
+    
+    <!-- Editing cells requires jQuery UI Tools. -->
+    <script src="static/js/jquery.tools.min.js"></script>
+    
+    <!-- The table library itself. -->
+    <script src="static/js/table.js"></script>
+    
+    <script type="text/javascript">
+      $(document).ready(
+        function()
+        {
+					// create the objects
+					
+					var s1_m1 = STable( {rows: 3, cols: 4, id: "s1_m1"} );
+					var s1_m2 = STable( {rows: 4, cols: 2, id: "s1_m2"} );
+					s1_m1.randomize();
+					s1_m1.render();
+          s1_m2.randomize();
+          s1_m2.render();
+					s1_m1.blinkRow(0,true,'00ff00');
+					s1_m2.blinkCol(0,true,'00ff00');
+					
+          var s1_m3 = STable( {rows: 3, cols: 3, id: "s1_m3"} );
+          var s1_m4 = STable( {rows: 2, cols: 2, id: "s1_m4"} );
+          s1_m3.randomize();
+          s1_m3.render();
+          s1_m4.randomize();
+          s1_m4.render();
+          s1_m3.blinkRow(0,true,'ff0000');
+          s1_m4.blinkCol(0,true,'ff0000');
+					
+					var arr = s1_m1.getArray();
+					var s2_mA1 = STable( {rows: 3, cols: 4, id: "s2_mA1"} );
+					var s2_mA2 = STable( {rows: 3, cols: 4, id: "s2_mA2"} );
+					s2_mA1.setArray(arr);
+					s2_mA2.setArray(arr);
+					s2_mA1.render();
+					s2_mA2.render();
+					arr = s1_m2.getArray();
+					var s2_mB1 = STable( {rows: 4, cols: 2, id: "s2_mB1"} );
+					var s2_mB2 = STable( {rows: 4, cols: 2, id: "s2_mB2"} );
+					s2_mB1.setArray(arr);
+					s2_mB1.render();
+          s2_mB2.setArray(arr);
+          s2_mB2.render();
+					s2_mA2.blinkCol(0,true,'ff0000');
+					s2_mB2.blinkRow(0,true,'ff0000');
+					
+          // create the table
+          table = STable( { rows: 5, cols: 5,
+                            
+                            // might be anything unique
+                            id: "m1",
+                            
+                            headers: [ 'First_1', 'Second_2', 'Third_3', 'Fourth', 'Fifth'],
+                            
+                            // the cell edit html element id
+                            edit: 'cell-edit' } );
+                            
+          // we have to place some values in the table before rendering it
+          table.randomize();
+          table.render();
+          
+          $('#edit').click(
+            function(e)
+            {
+              $('#cell-edit').data('overlay').load();
+              e.preventDefault();
+            }
+          );
+          
+          $("#cell-edit").overlay({
+            effect: 'apple',
+          
+            // custom top position
+            //top: 260,
+          
+            // some mask tweaks suitable for facebox-looking dialogs
+            mask: {
+          
+              // you might also consider a "transparent" color for the mask
+              color: '#fff',
+          
+              // load mask a little faster
+              loadSpeed: 200,
+          
+              // very transparent
+              opacity: 0.5
+            },
+          
+            // disable this for modal dialog-type of overlays
+            closeOnClick: false,
+             
+            // load it immediately after the construction
+            load: false
+          
+          });
+					
+					$(".scrollable").scrollable();
+					var api = $(".scrollable").data('scrollable');
+					api.onSeek( function()
+					{
+						// and here this.getIndex() returns the step number
+					}
+					);
+        }
+      );
+    </script>
+  </head>
+  <body>
+    <div id="test"></div>
+    <div align="center">
+    	<h2>Matrix multiplying</h2>
+
+      <!-- "previous page" action -->
+      <a class="prev browse left"></a>
+      
+			<!-- root element for scrollable -->
+			<div class="scrollable">   
+			   
+			   <!-- root element for the items -->
+			   <div class="items">
+			   
+			      <div align="left">
+			      	<div align="center">
+			      		<h2>Mnożenie macierzy</h2>
+			      	</div>
+							<p>Dwie macierze można pomnożyć, jeśli ich wymiary są odpowiednie. Liczba kolumn macierzy po lewej stronie musi być równa liczbie wierszy macierzy po prawej stronie.</p>
+              <p>Poniższe macierze spełniają ten warunek, a więc można je wymnożyć.</p>
+              <table border="0" cellpadding="20" align="center">
+                <tr>
+                  <td align="center" id="s1_m1"></td>
+                  <td align="center" id="s1_m2"></td>
+                </tr>
+              </table>
+							<p>Natomiast poniższych dwóch macierzy nie można wymnożyć:</p>
+              <table border="0" cellpadding="20" align="center">
+                <tr>
+                  <td align="center" id="s1_m3"></td>
+                  <td align="center" id="s1_m4"></td>
+                </tr>
+              </table>
+			      </div>
+			      
+			      <!-- 5-10 -->
+			      <div align="left">
+			      	<p>Z tego względu niezwykle istotna jest <b>kolejność</b> mnożenia macierzy. Załóżmy, że mamy dane następujące macierze</p>
+							<table border="0" cellpadding="20" align="center">
+								<tr>
+									<td>A = </td>
+									<td id="s2_mA1"></td>
+									<td>, B = </td>
+									<td id="s2_mB1"></td>
+								</tr>
+							</table>
+							<p>Można wykonać mnożenie AxB, gdyż liczba kolumn macierzy A jest równa liczbie wierszy macierzy B.</p>
+							<p>Nie można jednak wykonać mnożenia BxA, gdyż liczba kolumn macierzy B nie jest równa liczbie wierszy macierzy A:</p>
+							<table border="0" cellpadding="20" align="center">
+								<tr>
+									<td id="s2_mB2"></td>
+									<td id="s2_mA2"></td>
+								</tr>
+							</table>
+			      </div>
+			      
+			      <!-- 10-15 -->
+			      <div>
+			      	<p>step 3</p>
+			      </div>
+			      
+			   </div>
+			   
+			</div>
+			
+			<!-- "next page" action -->
+      <a class="next browse right"></a>
+			
+
+    <div class="apple_overlay" id="cell-edit">
+      <div class="details" align="center">
+        <h2>Enter a new value:</h2>
+        <form>
+          <input type="text" id="cell-edit-text" />
+        </form>
+        <p><a id="cell-edit-ok" href="">OK</a></p>
+      </div>
+    </div>
+
+  </body>
+</html>
